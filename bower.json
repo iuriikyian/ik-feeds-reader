@@ -1,0 +1,25 @@
+{
+  "name": "ik-feeds-reader",
+  "version": "0.0.0",
+  "authors": [
+    "Iurii Kyian <iurii.kyian@insights.md>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "requirejs": "~2.1.15"
+  },
+  "dependencies": {
+    "backbone": "~1.1.2",
+    "underscore": "~1.6.0",
+    "underscore.deferred": "*",
+    "zepto-full": "~1.1.2"
+  }
+}
