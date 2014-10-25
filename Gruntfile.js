@@ -1,44 +1,50 @@
-module.exports = function(grunt) {
+/*global module,require */
+/*jslint nomen: true*/  //<- allw _ in the begining and at the end
+/*jslint white: true */ //<- now additional whitespaces in function(){}
+var _ = require('underscore');
 
+module.exports = function(grunt){
+    'use strict';
     // Project configuration.
     grunt.initConfig({
         phonegap : 'node_modules/.bin/phonegap',
         weinre : 'node_modules/.bin/weinre',
         appDir : 'ik-feeds-reader',
         wwwDir : '<%= appDir %>/www',
+        weinreHost : 'weinre.192.168.1.74.xip.io',
 
         pkg: grunt.file.readJSON('package.json'),
         clean: {
-        	libs : ['<%= wwwDir %>/js/libs'],
-        	jst : ['<%= wwwDir %>/js/jst.min.js']
+            libs : ['<%= wwwDir %>/js/libs'],
+            jst : ['<%= wwwDir %>/js/jst.min.js'],
+            index : ['<%= wwwDir %>/js/index.html']
         },
         copy: {
             libs: {
                 files: [
                     {
-                        expand: true, 
-                        cwd: 'bower_components', 
+                        expand: true,
+                        cwd: 'bower_components',
                         src : [
-                        	"requirejs/require.js",
-    						"underscore/underscore.js",
-    						"underscore.deferred/underscore.deferred.js",
-    						"zepto-full/zepto.js",
-    						"backbone/backbone.js"
-                        ], 
+                            "requirejs/require.js",
+                            "underscore/underscore.js",
+                            "underscore.deferred/underscore.deferred.js",
+                            "zepto-full/zepto.js",
+                            "backbone/backbone.js"
+                        ],
                         dest: "<%= wwwDir %>/js/libs/"
-                     }
+                    }
                 ]
             }
         },
         exec: {
-        	'run-app-server' : {
-        		cwd: '<%= appDir %>',
-        		command: '../<%= phonegap %> serve'
-        	},
-        	'run-logging-server' : {
-        		command: '<%= weinre %>'
-        	}
-
+            'run-app-server' : {
+                cwd: '<%= appDir %>',
+                command: '../<%= phonegap %> serve'
+            },
+            'run-logging-server' : {
+                command: '<%= weinre %>'
+            }
         },
         jshint: { //TODO: review
             options: {
@@ -72,7 +78,7 @@ module.exports = function(grunt) {
                     google : false,
                     // mocha testing
                     mochaPhantomJS : false
-                },
+                }
             },
             src: '<%= wwwDir %>/js/**/*.js'
         },
@@ -81,7 +87,7 @@ module.exports = function(grunt) {
                 options: {
                     namespace: "JST",
                     amd : true,
-                    processName: function(filename) {
+                    processName: function (filename) {
                         //remove the 'src' prefix for the app
                         return filename.split('/').slice(1).join('/');
                     }
@@ -112,6 +118,24 @@ module.exports = function(grunt) {
                 runInBackground: false //true|false
             }
         },
+        generate : {
+            'web-index' : {
+                template : 'resources/index-template.html',
+                dest : '<%= wwwDir %>/index.html',
+                config : {
+                    cordova : '',
+                    weinre : ''
+                }
+            },
+            'device-index' : {
+                template : 'resources/index-template.html',
+                dest : '<%= wwwDir %>/index.html',
+                config : {
+                    cordova : '<script type="text/javascript" src="cordova.js"></script>',
+                    weinre : '<script src="http://<%= weinreHost %>/target/target-script-min.js"></script>'
+                }
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -125,8 +149,18 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-exec');
 
 
-    grunt.registerTask('build', ['clean', 'jshint', 'copy:libs', 'jst:compile'])
+    grunt.registerTask('build', ['clean', 'jshint', 'copy:libs', 'jst:compile', 'generate:device-index']);
+    grunt.registerTask('build-web', ['clean', 'jshint', 'copy:libs', 'jst:compile', 'generate:web-index']);
     grunt.registerTask('serve', ['exec:run-app-server']);
     grunt.registerTask('serve-web', ['http-server:dev']);
     grunt.registerTask('logging', ['exec:run-logging-server']);
+    
+    grunt.registerMultiTask("generate", function(){
+        var config = grunt.config.get("generate"),
+            cfg = config[this.target],
+            template = grunt.file.read(cfg.template);
+        grunt.file.write(cfg.dest, _.template(template)(cfg.config));
+        grunt.log.ok('generated file: ' + cfg.dest);
+
+    });
 };

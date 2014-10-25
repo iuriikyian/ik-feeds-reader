@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "~0.6.0",
@@ -19,7 +18,8 @@
     "grunt-exec": "~0.4.6",
     "grunt-http-server": "1.0.0",
     "phonegap": "^3.6.0-0.21.19",
-    "weinre": "^2.0.0-pre-I0Z7U9OV"
+    "weinre": "^2.0.0-pre-I0Z7U9OV",
+    "underscore": "~1.7.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
