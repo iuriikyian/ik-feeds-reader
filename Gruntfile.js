@@ -16,6 +16,8 @@ module.exports = function(grunt){
         pkg: grunt.file.readJSON('package.json'),
         clean: {
             libs : ['<%= wwwDir %>/js/libs'],
+            fonts : ['<%= wwwDir %>/fonts'],
+            css : ['<%= wwwDir %>/css'],
             jst : ['<%= wwwDir %>/js/jst.min.js'],
             index : ['<%= wwwDir %>/js/index.html']
         },
@@ -33,6 +35,26 @@ module.exports = function(grunt){
                             "backbone/backbone.js"
                         ],
                         dest: "<%= wwwDir %>/js/libs/"
+                    }
+                ]
+            },
+            bootstrap: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'bower_components/bootstrap/dist/css',
+                        src: [
+                            'bootstrap.css'
+                        ],
+                        dest: "<%= wwwDir %>/css/"
+                    },
+                    {
+                        expand: true,
+                        cwd: 'bower_components/bootstrap/dist/fonts',
+                        src: [
+                            '*'
+                        ],
+                        dest: "<%= wwwDir %>/fonts/"
                     }
                 ]
             }
@@ -99,6 +121,18 @@ module.exports = function(grunt){
                 }
             }
         },
+        compass: {
+            dev: {
+                options :{
+	                sassDir: 'resources/sass',
+	                cssDir: '<%= wwwDir %>/css',
+	                outputStyle: 'expanded',
+	                relativeAssets: true,
+	                imagesDir: 'resources/img',
+	                fontsDir: 'resources/fonts'
+                }
+            }
+        },
         'http-server' : {
             'dev' : {
                 // the server root directory
@@ -115,7 +149,7 @@ module.exports = function(grunt){
                 defaultExt: "html",
 
                 // run in parallel with other tasks
-                runInBackground: false //true|false
+                runInBackground: true //true|false
             }
         },
         generate : {
@@ -135,7 +169,21 @@ module.exports = function(grunt){
                     weinre : '<script src="http://<%= weinreHost %>/target/target-script-min.js"></script>'
                 }
             }
-        }
+        },
+         watch: {
+            compass: {
+                files: ['resources/sass/**/*.scss'],
+                tasks: ['compass:dev']
+            },
+            templates: {
+                files: ['resources/templates/**/*.html'],
+                tasks: ['jst:compile']
+            },
+            'index-web': {
+                files: ['resources/index-template.html'],
+                tasks: ['generate:index-web']
+            }
+         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -149,10 +197,26 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-exec');
 
 
-    grunt.registerTask('build', ['clean', 'jshint', 'copy:libs', 'jst:compile', 'generate:device-index']);
-    grunt.registerTask('build-web', ['clean', 'jshint', 'copy:libs', 'jst:compile', 'generate:web-index']);
+    grunt.registerTask('build', [
+        'clean', 
+        'jshint', 
+        'copy:libs', 
+        'copy:bootstrap',
+        'jst:compile', 
+        'compass', 
+        'generate:device-index'
+    ]);
+    grunt.registerTask('build-web', [
+        'clean',
+        'jshint',
+        'copy:libs',
+        'copy:bootstrap',
+        'jst:compile',
+        'compass',
+        'generate:web-index'
+    ]);
     grunt.registerTask('serve', ['exec:run-app-server']);
-    grunt.registerTask('serve-web', ['http-server:dev']);
+    grunt.registerTask('serve-web', ['http-server:dev', 'watch']);
     grunt.registerTask('logging', ['exec:run-logging-server']);
     
     grunt.registerMultiTask("generate", function(){

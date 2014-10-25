@@ -20,6 +20,7 @@
     "backbone": "~1.1.2",
     "underscore": "~1.6.0",
     "underscore.deferred": "*",
-    "zepto-full": "~1.1.2"
+    "zepto-full": "~1.1.2",
+    "bootstrap": "~3.2.0"
   }
 }
