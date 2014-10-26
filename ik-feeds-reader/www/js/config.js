@@ -1,3 +1,6 @@
+/*global require,define,console*/
+/*jslint nomen: true*/  //<- allw _ in the begining and at the end
+/*jslint white: true*/ //<- now additional whitespaces in function(){}
 console.log('configuration started');
 require.config({
 	paths : {
@@ -39,6 +42,7 @@ require.config({
 console.log('configuration finished');
 //console.log(window.require);
 require(['app'], function(app){
+    'use strict';
 	console.log('starting app');
 	app.initialize();
 });

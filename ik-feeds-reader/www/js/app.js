@@ -1,4 +1,9 @@
-define(['zepto', 'views/HomeView'], function($, HomeView){
+/*global define*/
+/*jslint nomen: true*/  //<- allw _ in the begining and at the end
+/*jslint white: true*/ //<- now additional whitespaces in function(){}
+
+define(['underscore', 'zepto', 'views/HomeView'], function(_, $, HomeView){
+    'use strict';
     var app = {
         // Application Constructor
         initialize: function() {
@@ -25,17 +30,6 @@ define(['zepto', 'views/HomeView'], function($, HomeView){
             var view = new HomeView({});
             $('body').empty();
             $('body').append(view.render().el);
-        },
-        // Update DOM on a Received Event
-        receivedEvent: function(id) {
-            var parentElement = document.getElementById(id);
-            var listeningElement = parentElement.querySelector('.listening');
-            var receivedElement = parentElement.querySelector('.received');
-
-            listeningElement.setAttribute('style', 'display:none;');
-            receivedElement.setAttribute('style', 'display:block;');
-
-            console.log('Received Event: ' + id);
         }
     };
     return app;
