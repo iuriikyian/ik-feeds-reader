@@ -3,10 +3,6 @@
 /*global ContentService,SpreadsheetTool,InMemorySheet,Logger*/
 
 var webTools = {
-    make_text_result : function(txt){
-        'use strict';
-        return ContentService.createTextOutput(txt);
-    },
     make_json_result : function(txt){
         'use strict';
         var res = ContentService.createTextOutput(txt);
@@ -21,6 +17,26 @@ var webTools = {
     }
 };
 
+function _error_json_result(error, callback){
+    'use strict';
+    var txt = JSON.stringify({
+        success : false,
+        error : error
+    });
+    if(callback){
+        return webTools.make_jsonp_result(txt, callback);
+    }
+    return webTools.make_json_result(txt);
+}
+
+function _success_json_result(txt, callback){
+    'use strict';
+    if(callback){
+        return webTools.make_jsonp_result(txt, callback);
+    }
+    return webTools.make_json_result(txt);
+}
+
 var handlers = {
     list : function(params, log, config){
         'use strict';
@@ -29,11 +45,14 @@ var handlers = {
             sheet = stool.getSheet(config.PUBLISHED_CHANNELS_SHEET_NAME),
             mSheet;
         if(typeof sheet === 'undefined'){
-            return webTools.make_text_result('ERROR:404 published channels is not found');
+            return _error_json_result('ERROR:404 published channels is not found', params.callback);
         }
         mSheet = new InMemorySheet();
         mSheet.load(sheet, 3);
-        return webTools.make_json_result(JSON.stringify(mSheet.getRows()));
+        return _success_json_result(JSON.stringify({
+            success : true,
+            data : mSheet.getRows()
+        }), params.callback);
     },
     status : function(params, log, config){
         'use strict';
@@ -44,10 +63,10 @@ var handlers = {
             channelsMap = {},
             filteredRows = [];
         if(typeof sheet === 'undefined'){
-            return webTools.make_text_result('ERROR:404 published channels is not found');
+            return _error_json_result('ERROR:404 published channels is not found', params.callback);
         }
         if(!params.ids){
-            return webTools.make_text_result('ERROR:400 Bad request: parameter ids is not provided');
+            return _error_json_result('ERROR:400 Bad request: parameter ids is not provided', params.callback);
         }
         mSheet = new InMemorySheet();
         mSheet.load(sheet, 3);
@@ -62,19 +81,22 @@ var handlers = {
             filteredRows.push(row);
           }
         });
-        return webTools.make_json_result(JSON.stringify(filteredRows));
+        return _success_json_result(JSON.stringify({
+            success : true,
+            data : filteredRows
+        }), params.callback);
     },
     data : function(params, log, config){
         'use strict';
         var spreadsheet = SpreadsheetTool.openSpreadsheet(config.JOURNALS_FOLDER, config.JOURNAL),
             stool = new SpreadsheetTool(spreadsheet),
             sheet = stool.getSheet(config.PUBLISHED_CHANNELS_SHEET_NAME),
-            mSheet, resParts = [], channelsMap = {}, idValues;
+            mSheet, resParts = [], resVersions = {}, channelsMap = {}, idValues;
         if(typeof sheet === 'undefined'){
-            return webTools.make_text_result('ERROR:404 published channels is not found');
+            return _error_json_result('ERROR:404 published channels is not found', params.callback);
         }
         if(!params.ids){
-            return webTools.make_text_result('ERROR:400 Bad request: parameter ids is not provided');
+            return _error_json_result('ERROR:400 Bad request: parameter ids is not provided', params.callback);
         }
         mSheet = new InMemorySheet();
         mSheet.load(sheet);
@@ -86,9 +108,10 @@ var handlers = {
         mSheet.getRows().forEach(function(row){
           if(channelsMap[row.id]){
             resParts.push(row.data);
+            resVersions[row.id] = row.version;
           }
         });
-        return webTools.make_json_result('[' + resParts.join(',') + ']');
+        return _success_json_result('{"success" : true, "data" : [' + resParts.join(',') + '], "versions" : ' + JSON.stringify(resVersions) + '}', params.callback);
     }
 };
 
@@ -113,7 +136,7 @@ function doGet(evt){
 
         handler = handlers[evt.parameter.cmd];
         if(typeof handler === 'undefined'){
-            return webTools.make_text_result('ERROR: 400 Bad Request');
+            return _error_json_result('ERROR: 400 Bad Request: not recognized cmd');
         }
         return handler(evt.parameter, log, config);
     }catch(e){
