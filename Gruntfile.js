@@ -32,9 +32,18 @@ module.exports = function(grunt){
                             "underscore/underscore.js",
                             "underscore.deferred/underscore.deferred.js",
                             "zepto-full/zepto.js",
-                            "backbone/backbone.js"
+                            "backbone/backbone.js",
+                            "hammerjs/hammer.js"
                         ],
                         dest: "<%= wwwDir %>/js/libs/"
+                    },
+                    {
+                        expand: true,
+                        cwd: 'bower_components/string/lib',
+                        src : [
+                            "string.js",
+                        ],
+                        dest: "<%= wwwDir %>/js/libs/string/"
                     }
                 ]
             },

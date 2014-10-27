@@ -31,5 +31,29 @@
         width: 100%;
         overflow-y: scroll;
         background-color: #336677;
+        article.channel {
+            border-radius: 10px;
+            border: solid 2px #aaa;
+            min-height: 75px;
+        }
     }
+}
+
+@media (min-width: $sm-size) {
+    .home-view section article.channel {
+        min-height: 100px;
+    }
+}
+
+@media (min-width: $md-size) {
+    .home-view section article.channel {
+        min-height: 150px;
+    }
+}
+
+@media (min-width: $lg-size) {
+    .home-view section article.channel {
+        min-height: 200px;
+    }
+
 }

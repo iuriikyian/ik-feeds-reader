@@ -10,6 +10,9 @@ require.config({
 		zepto                   : 'libs/zepto-full/zepto',
         backbone                : 'libs/backbone/backbone',
 
+        hammer                  : 'libs/hammerjs/hammer',
+        string                  : 'libs/string/string',
+
         templates				: 'jst.min'
     },
     shim   : {
@@ -26,8 +29,12 @@ require.config({
         },
 
         'backbone': {
-            deps   : [ 'underscore', 'zepto' ],
+            deps   : [ 'underscore', 'zepto', 'underscore.deferred' ],
             exports: 'Backbone'
+        },
+
+        'hammer': {
+            exports: 'Hammer'
         }
     },
     map    : {
@@ -40,9 +47,13 @@ require.config({
 
 });
 console.log('configuration finished');
-//console.log(window.require);
+
+var config = {
+    server : 'https://script.google.com/macros/s/AKfycbwVyHBkZo_GRWewueRQkJlx2KRCnpKOZCa8PrJpgpyJNvTE02t4/exec'
+};
+
 require(['app'], function(app){
     'use strict';
 	console.log('starting app');
-	app.initialize();
+	app.initialize(config);
 });

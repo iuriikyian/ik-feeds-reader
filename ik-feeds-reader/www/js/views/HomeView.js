@@ -9,14 +9,25 @@ function(_, $, Backbone, utils){
 		template : utils.template('home-view'),
 
 		initialize : function(options){
-
+			this._channelsManager = options.channelsManager;
 		},
 
 		render : function(){
 			var $el = $(this.el);
 			$el.empty();
-			$el.append(this.template({}));
+			$el.append(this.template(this._getContext()));
 			return this;
+		},
+
+		_getContext : function(){
+			var channels = this._channelsManager.getChannels();
+			return {
+				channels : channels
+			};
+		},
+
+		_initHandlers : function(){
+			//this.$('.menu')
 		}
 	});
 });

@@ -1,4 +1,11 @@
+// screen sizes from bootstrap
+$sm-size : 768px;
+$md-size : 992px;
+$lg-size : 1200px;
+
+
 @import "home-view";
+@import "updates-loading-view";
 
 html, body{
     width: 100%;

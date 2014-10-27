@@ -2,4 +2,10 @@
     <span class="menu glyphicon glyphicon-th"></span>
     <div class="title">ik-feeds-reader</div>
 </header>
-<section></section>
+<section>
+	<% _.each(channels, function(channel){ %>
+		<article class="channel col-xs-4 col-sm-3 col-md-2 col-lg-1" data-target="<%= channel.id %>">
+			<div class="title"><%= channel.title %></div>
+		</article>
+	<%})%>
+</section>
