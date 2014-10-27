@@ -21,14 +21,12 @@ function JournalPublisher(spreadsheet, cache, log, config){
 
     this.publish = function(){
         var journalData = this._extract_journal_data();
-        //this._update_journal_data(journalData);
         this._update_channels_data(journalData);
     };
   
     this._extract_journal_data = function(){
         var mChannelsSheet = _getInMemorySheet(stool, config.CHANNELS_LIST_NAME ,cache['channels-info']),
             channels = [];
-    
         function _toRowPost(sheetPost, keys){
             var res = {}, val;
             keys.forEach(function(key){
@@ -42,11 +40,11 @@ function JournalPublisher(spreadsheet, cache, log, config){
             return res;
         }
 
-        function _toRowPosts(sheetPosts, keys, channelId){
+        function _toRowPosts(sheetPosts, keys, channelName){
             var res = [];
             sheetPosts.forEach(function(post){
                 var rowPost = _toRowPost(post, keys);
-                rowPost.channelId = channelId;
+                rowPost.channel = channelName;
                 res.push(rowPost);
             });
             return res;
@@ -73,14 +71,14 @@ function JournalPublisher(spreadsheet, cache, log, config){
                 postsCount = channelInfo.maxposts;
             }
             channel = {
-                id : channelInfo.id,
+                id : channelInfo.name,
                 title : channelInfo.title,
                 image : channelInfo.image,
                 origin : channelInfo.origin,
                 sort : channelInfo.sort,
                 media : channelInfo.media,
                 maxposts : channelInfo.maxposts,
-                posts : _toRowPosts(mChannelSheet.getRows().slice(0, postsCount), mChannelSheet.getKeys(), channelInfo.id)
+                posts : _toRowPosts(mChannelSheet.getRows().slice(0, postsCount), mChannelSheet.getKeys(), channelInfo.name)
             };
             channels.push(channel);
         });
