@@ -17,6 +17,10 @@ function(_, $, Backbone, utils){
 			$el.empty();
 			$el.append(this.template({}));
 			return this;
+		},
+
+		_initHandlers : function(){
+			//this.$('.menu')
 		}
 	});
 });
