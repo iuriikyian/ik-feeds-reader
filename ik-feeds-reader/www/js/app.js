@@ -49,6 +49,7 @@ define(['zepto', 'views/UpdatesLoadingView', 'views/HomeView', 'data/ChannelsMan
                     });
                     fetching.fail(function(error){
                         console.error(error);
+                        view.render();
                         updatesView.remove();
                     });
                 }else{
